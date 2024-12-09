@@ -1,15 +1,14 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 import tkintermapview
 import requests
 
-tile_servers = [
-    "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga",
-    "https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga",
-    "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-]
-
-print(tile_servers[2])
+tile_servers_dict = {
+    "Google Maps": "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga",
+    "Google Satellite": "https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga",
+    "OS Maps": "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+}
 
 # Tkinter window setup
 root = Tk()
@@ -20,13 +19,17 @@ root.title("Rainfall Map")
 API_KEY = "c72b8237acd5ac5cbd79f7d38cc0bbb9"
 
 
-def change_tile_server(index):
-    if 0 <= index < len(tile_servers):
-        selected_server = tile_servers[index]
-        map_widget.set_tile_server(selected_server, max_zoom=22)
-        output_string.set(f"Switched to Tile Server {index + 1}")
-    else:
-        output_string.set("Invalid tile server index.")
+def change_tile_server(server):
+    match server:
+        case "Google Maps":
+            map_widget.set_tile_server(
+                tile_servers_dict["Google Maps"], max_zoom=22)
+        case "Google Satellite":
+            map_widget.set_tile_server(
+                tile_servers_dict["Google Satellite"], max_zoom=22)
+        case "OS Maps":
+            map_widget.set_tile_server(
+                tile_servers_dict["OS Maps"], max_zoom=22)
 
 
 def get_coordinates_opencage(address):
@@ -61,9 +64,10 @@ def getAddress():
                 f"Found: {inputted_place} (Lat: {lat}, Lon: {lon})")
             map_widget.set_zoom(14)
         except Exception as e:
-            output_string.set(f"Error: {e}")
+            messagebox.showerror(f"Error: {e}")
     else:
-        output_string.set("Please enter a valid address.")
+        messagebox.showerror('Please enter a valid address')
+        # output_string.set("Please enter a valid address.")
 
 
 map_widget = tkintermapview.TkinterMapView(
@@ -88,11 +92,8 @@ input_frame.pack(pady=0)
 map_widget.set_tile_server(
     "https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
 
-london_marker = map_widget.set_address("London", marker=True, text="London")
-
-map_widget.set_tile_server(tile_servers[0], max_zoom=22)
-
-map_widget.set_zoom(6)
+map_widget.set_tile_server(tile_servers[0])
+map_widget.set_zoom(9)
 map_widget.set_position(51.5074, -0.1278)
 
 london_polygon = map_widget.set_polygon(
@@ -139,17 +140,17 @@ button_frame.pack(pady=10)
 
 # Create buttons for each tile server
 google_maps_button = ttk.Button(
-    button_frame, text="Google Maps", command=lambda i=0: change_tile_server(i))
+    button_frame, text="Google Maps", command=lambda server="Google Maps": change_tile_server(server))
 google_maps_button.grid(row=0, column=0, padx=5)
 
 
 google_satellite_button = ttk.Button(
-    button_frame, text="Google Satellite", command=lambda i=1: change_tile_server(i))
+    button_frame, text="Google Satellite", command=lambda server="Google Satellite": change_tile_server(server))
 google_satellite_button.grid(row=0, column=1, padx=5)
 
 
 openstreetmap_button = ttk.Button(
-    button_frame, text="OS Map", command=lambda i=2: change_tile_server(i))
+    button_frame, text="OS Map", command=lambda server="OS Maps": change_tile_server(server))
 openstreetmap_button.grid(row=0, column=2, padx=5)
 
 root.mainloop()
