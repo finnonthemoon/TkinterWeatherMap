@@ -1,6 +1,5 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 import tkintermapview
 import requests
 
@@ -13,7 +12,7 @@ tile_servers_dict = {
 # Tkinter window setup
 root = Tk()
 root.geometry(f"{1200}x{900}")
-root.title("Rainfall Map")
+root.title("Weather Map")
 
 # OpenWeatherMap API Key
 API_KEY = "c72b8237acd5ac5cbd79f7d38cc0bbb9"
@@ -67,7 +66,6 @@ def getAddress():
             messagebox.showerror(f"Error: {e}")
     else:
         messagebox.showerror('Please enter a valid address')
-        # output_string.set("Please enter a valid address.")
 
 
 map_widget = tkintermapview.TkinterMapView(
@@ -92,7 +90,7 @@ input_frame.pack(pady=0)
 map_widget.set_tile_server(
     "https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
 
-map_widget.set_tile_server(tile_servers[0])
+map_widget.set_tile_server(tile_servers_dict["Google Maps"])
 map_widget.set_zoom(9)
 map_widget.set_position(51.5074, -0.1278)
 
