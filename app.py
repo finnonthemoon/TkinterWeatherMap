@@ -15,7 +15,7 @@ root.geometry(f"{1200}x{900}")
 root.title("Weather Map")
 
 # OpenWeatherMap API Key
-API_KEY = "c72b8237acd5ac5cbd79f7d38cc0bbb9"
+OWM_KEY = "c72b8237acd5ac5cbd79f7d38cc0bbb9"
 
 
 def change_tile_server(server):
@@ -23,12 +23,15 @@ def change_tile_server(server):
         case "Google Maps":
             map_widget.set_tile_server(
                 tile_servers_dict["Google Maps"], max_zoom=22)
+            print("Changed tile server to g maps")
         case "Google Satellite":
             map_widget.set_tile_server(
                 tile_servers_dict["Google Satellite"], max_zoom=22)
+            print("Changed tile server to g sat")
         case "OS Maps":
             map_widget.set_tile_server(
-                tile_servers_dict["OS Maps"], max_zoom=22)
+                tile_servers_dict["OS Maps"], max_zoom=19)
+            print("Changed tile server to OS")
 
 
 def get_coordinates_opencage(address):
@@ -72,11 +75,13 @@ map_widget = tkintermapview.TkinterMapView(
     root, width=1200, height=900, corner_radius=5)
 map_widget.place(relx=0.5, rely=0.5, anchor=CENTER)
 
+
 title_label = ttk.Label(
     master=root,
     text='Enter address',
     font='Helvetica 24 bold')
 title_label.pack()
+
 
 # Frame for user input (Entry and Button)
 input_frame = ttk.Frame(master=root)
@@ -87,12 +92,15 @@ entry.pack(side='left')
 button.pack(side='left')
 input_frame.pack(pady=0)
 
+
 map_widget.set_tile_server(
     "https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
+
 
 map_widget.set_tile_server(tile_servers_dict["Google Maps"])
 map_widget.set_zoom(9)
 map_widget.set_position(51.5074, -0.1278)
+
 
 london_polygon = map_widget.set_polygon(
     [
@@ -116,6 +124,7 @@ london_polygon = map_widget.set_polygon(
     name="London and the Chilterns"
 )
 
+
 output_string = StringVar()
 output_label = ttk.Label(
     master=root,
@@ -123,6 +132,7 @@ output_label = ttk.Label(
     font='Helvetica 24 ',
     textvariable=output_string)
 output_label.pack(pady=5)
+
 
 output_string2 = StringVar()
 output_label = ttk.Label(
@@ -132,9 +142,11 @@ output_label = ttk.Label(
     textvariable=output_string2)
 output_label.pack(pady=5)
 
+
 # Frame for tile server buttons
 button_frame = ttk.Frame(root)
 button_frame.pack(pady=10)
+
 
 # Create buttons for each tile server
 google_maps_button = ttk.Button(
