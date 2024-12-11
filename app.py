@@ -68,7 +68,7 @@ def getAddress():
         except Exception as e:
             messagebox.showerror(f"Error: {e}")
     else:
-        messagebox.showerror('Please enter a valid address')
+        messagebox.askokcancel("Invalid Address", "Please enter a valid address")
 
 
 map_widget = tkintermapview.TkinterMapView(
