@@ -90,39 +90,48 @@ map_widget.set_tile_server(tile_servers_dict["Google Maps"])
 map_widget.set_zoom(9)
 map_widget.set_position(51.5074, -0.1278)
 
-top_frame = ctk.CTkFrame(root, fg_color="#ffffff", corner_radius=20)
+top_frame = ctk.CTkFrame(root,
+                         fg_color="white",
+                         corner_radius=20)
 top_frame.place(relx=0.98, rely=0.03, anchor="ne")
 
 search_var = StringVar()
 search_entry = ctk.CTkEntry(
-    top_frame, textvariable=search_var, placeholder_text="Search for a location...", width=250, height=35, corner_radius=15)
-search_entry.grid(row=0, column=0, padx=5, pady=5)
+    top_frame,
+    textvariable=search_var,
+    placeholder_text="Search for a location...",
+    width=325,
+    height=45,
+    corner_radius=15,
+    fg_color="white")
+search_entry.grid(row=0, column=0, padx=15, pady=15)
 
 search_button = ctk.CTkButton(
-    top_frame, text="🔍", width=40, height=35, corner_radius=15, command=getAddress)
+    top_frame, text="Search", width=40, height=35, corner_radius=15, command=getAddress)
 search_button.grid(row=0, column=1, padx=5, pady=5)
 
 
 # Tile Server Buttons (Floating on the Map)
-button_frame = ctk.CTkFrame(root, fg_color="#ffffff", corner_radius=15)
-button_frame.place(relx=0.02, rely=0.5, anchor="w")  # Left-center position
+button_frame = ctk.CTkFrame(root, fg_color="white",
+                            corner_radius=15, bg_color='white')
+button_frame.place(relx=0.95, rely=0.5, anchor="e")  # Left-center position
 
 google_maps_button = ctk.CTkButton(
     button_frame, text="Google Maps", command=lambda: change_tile_server("Google Maps"))
-google_maps_button.pack(pady=5, padx=10)
+google_maps_button.pack(pady=10, padx=10)
 
 google_satellite_button = ctk.CTkButton(
     button_frame, text="Satellite", command=lambda: change_tile_server("Google Satellite"))
-google_satellite_button.pack(pady=5, padx=10)
+google_satellite_button.pack(pady=10, padx=10)
 
 osm_button = ctk.CTkButton(
     button_frame, text="OS Maps", command=lambda: change_tile_server("OS Maps"))
-osm_button.pack(pady=5, padx=10)
+osm_button.pack(pady=10, padx=10)
 
 
 # Logging output
 log_output = StringVar()
-log_output.set("Welcome! Enter a location or change map tiles.")
+log_output.set("Welcome RainItIn! I hope you enjoy my app :)")
 log_label = ctk.CTkLabel(root, textvariable=log_output, height=30,
                          fg_color="#e0e0e0", corner_radius=5, anchor="w", padx=10)
 log_label.pack(side="bottom", fill="x")
