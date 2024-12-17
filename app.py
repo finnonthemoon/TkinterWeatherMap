@@ -1,11 +1,11 @@
 from tkinter import *
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, StringVar
 import tkintermapview
 import requests
 import customtkinter as ctk
 
-ctk.set_appearance_mode("Light")
-ctk.set_default_color_theme("blue")
+# ctk.set_appearance_mode("Light")
+# ctk.set_default_color_theme("blue")
 
 tile_servers_dict = {
     "Google Maps": "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga",
@@ -17,9 +17,12 @@ tile_servers_dict = {
 root = ctk.CTk()
 root.geometry(f"{1200}x{900}")
 root.title("Weather Map")
+root.configure(fg_color="#ffffff")
+root.state("zoomed")
 
 # OpenWeatherMap API Key
 OWM_KEY = "c72b8237acd5ac5cbd79f7d38cc0bbb9"
+OPENCAGE_KEY = "668c51611f5042ee8636cb2d7426a6c0"
 
 
 def change_tile_server(server):
@@ -42,7 +45,6 @@ def change_tile_server(server):
 
 
 def get_coordinates_opencage(address):
-    OPENCAGE_KEY = "668c51611f5042ee8636cb2d7426a6c0"
     url = f"https://api.opencagedata.com/geocode/v1/json?q={
         address}&key={OPENCAGE_KEY}"
     response = requests.get(url)
@@ -78,7 +80,7 @@ def getAddress():
 
 map_widget = tkintermapview.TkinterMapView(
     root, width=1200, height=900, corner_radius=5)
-map_widget.pack(pady=(0, 10))
+map_widget.pack(fill="both", expand=True)
 
 map_widget.set_tile_server(
     "https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
