@@ -2,6 +2,10 @@ from tkinter import *
 from tkinter import ttk, messagebox
 import tkintermapview
 import requests
+import customtkinter as ctk
+
+ctk.set_appearance_mode("Light")
+ctk.set_default_color_theme("blue")
 
 tile_servers_dict = {
     "Google Maps": "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga",
@@ -10,7 +14,7 @@ tile_servers_dict = {
 }
 
 # Tkinter window setup
-root = Tk()
+root = ctk.CTk()
 root.geometry(f"{1200}x{900}")
 root.title("Weather Map")
 
@@ -24,14 +28,17 @@ def change_tile_server(server):
             map_widget.set_tile_server(
                 tile_servers_dict["Google Maps"], max_zoom=22)
             print("Changed tile server to g maps")
+            log_output.set(f"Tile server switched to {server}")
         case "Google Satellite":
             map_widget.set_tile_server(
                 tile_servers_dict["Google Satellite"], max_zoom=22)
             print("Changed tile server to g sat")
+            log_output.set(f"Tile server switched to {server}")
         case "OS Maps":
             map_widget.set_tile_server(
                 tile_servers_dict["OS Maps"], max_zoom=19)
             print("Changed tile server to OS")
+            log_output.set(f"Tile server switched to {server}")
 
 
 def get_coordinates_opencage(address):
@@ -52,46 +59,26 @@ def get_coordinates_opencage(address):
 
 
 def getAddress():
-    inputted_place = entry_str.get()
+    inputted_place = search_entry.get()
     if inputted_place:
         try:
-            # Get latitude and longitude using OpenCage
             lat, lon = get_coordinates_opencage(inputted_place)
-
-            # Set position on the map
             map_widget.set_position(lat, lon)
             map_widget.set_marker(lat, lon, text=inputted_place)
-
-            output_string.set(
+            log_output.set(
                 f"Found: {inputted_place} (Lat: {lat}, Lon: {lon})")
             map_widget.set_zoom(14)
         except Exception as e:
-            messagebox.showerror(f"Error: {e}")
+            messagebox.showerror(title="Error", message=f"Error: {
+                                 e}", icon="cancel")
     else:
-        messagebox.showerror('Please enter a valid address')
+        messagebox.showerror(
+            title="Error", message="Please enter a valid address", icon="warning")
 
 
 map_widget = tkintermapview.TkinterMapView(
     root, width=1200, height=900, corner_radius=5)
-map_widget.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-
-title_label = ttk.Label(
-    master=root,
-    text='Enter address',
-    font='Helvetica 24 bold')
-title_label.pack()
-
-
-# Frame for user input (Entry and Button)
-input_frame = ttk.Frame(master=root)
-entry_str = StringVar()
-entry = ttk.Entry(master=input_frame, textvariable=entry_str)
-button = ttk.Button(master=input_frame, text='Search', command=getAddress)
-entry.pack(side='left')
-button.pack(side='left')
-input_frame.pack(pady=0)
-
+map_widget.pack(pady=(0, 10))
 
 map_widget.set_tile_server(
     "https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
@@ -101,6 +88,43 @@ map_widget.set_tile_server(tile_servers_dict["Google Maps"])
 map_widget.set_zoom(9)
 map_widget.set_position(51.5074, -0.1278)
 
+search_frame = ctk.CTkFrame(root, fg_color="transparent")
+search_frame.place(relx=0.97, rely=0.03, anchor="ne")  # Top-right positioning
+
+search_entry = ctk.CTkEntry(
+    search_frame, placeholder_text="Search for a location", width=400, height=40)
+search_entry.grid(row=0, column=0, padx=(0, 10))
+
+search_button = ctk.CTkButton(
+    search_frame, text="Search", command=getAddress, width=120, height=40)
+search_button.grid(row=0, column=1)
+
+# Tile server buttons (centered at bottom)
+button_frame = ctk.CTkFrame(root, fg_color="transparent")
+button_frame.pack(pady=10)
+
+google_maps_button = ctk.CTkButton(button_frame, text="Google Maps",
+                                   command=lambda: change_tile_server(
+                                       "Google Maps"),
+                                   width=150, height=40)
+google_maps_button.grid(row=0, column=0, padx=10)
+
+google_satellite_button = ctk.CTkButton(button_frame, text="Google Satellite",
+                                        command=lambda: change_tile_server(
+                                            "Google Satellite"),
+                                        width=150, height=40)
+google_satellite_button.grid(row=0, column=1, padx=10)
+
+osm_button = ctk.CTkButton(button_frame, text="OS Maps",
+                           command=lambda: change_tile_server("OS Maps"),
+                           width=150, height=40)
+osm_button.grid(row=0, column=2, padx=10)
+
+# Logging output
+log_output = ctk.StringVar(value="Ready...")
+log_label = ctk.CTkLabel(root, textvariable=log_output,
+                         font=("Helvetica", 16), text_color="gray")
+log_label.pack(pady=5)
 
 london_polygon = map_widget.set_polygon(
     [
@@ -123,44 +147,5 @@ london_polygon = map_widget.set_polygon(
     border_width=6,
     name="London and the Chilterns"
 )
-
-
-output_string = StringVar()
-output_label = ttk.Label(
-    master=root,
-    text='Output',
-    font='Helvetica 24 ',
-    textvariable=output_string)
-output_label.pack(pady=5)
-
-
-output_string2 = StringVar()
-output_label = ttk.Label(
-    master=root,
-    text='Output',
-    font='Helvetica 16',
-    textvariable=output_string2)
-output_label.pack(pady=5)
-
-
-# Frame for tile server buttons
-button_frame = ttk.Frame(root)
-button_frame.pack(pady=10)
-
-
-# Create buttons for each tile server
-google_maps_button = ttk.Button(
-    button_frame, text="Google Maps", command=lambda server="Google Maps": change_tile_server(server))
-google_maps_button.grid(row=0, column=0, padx=5)
-
-
-google_satellite_button = ttk.Button(
-    button_frame, text="Google Satellite", command=lambda server="Google Satellite": change_tile_server(server))
-google_satellite_button.grid(row=0, column=1, padx=5)
-
-
-openstreetmap_button = ttk.Button(
-    button_frame, text="OS Map", command=lambda server="OS Maps": change_tile_server(server))
-openstreetmap_button.grid(row=0, column=2, padx=5)
 
 root.mainloop()
