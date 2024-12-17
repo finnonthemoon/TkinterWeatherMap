@@ -4,8 +4,8 @@ import tkintermapview
 import requests
 import customtkinter as ctk
 
-# ctk.set_appearance_mode("Light")
-# ctk.set_default_color_theme("blue")
+ctk.set_appearance_mode("Light")
+ctk.set_default_color_theme("blue")
 
 tile_servers_dict = {
     "Google Maps": "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga",
@@ -90,43 +90,42 @@ map_widget.set_tile_server(tile_servers_dict["Google Maps"])
 map_widget.set_zoom(9)
 map_widget.set_position(51.5074, -0.1278)
 
-search_frame = ctk.CTkFrame(root, fg_color="transparent")
-search_frame.place(relx=0.97, rely=0.03, anchor="ne")  # Top-right positioning
+top_frame = ctk.CTkFrame(root, fg_color="#ffffff", corner_radius=20)
+top_frame.place(relx=0.98, rely=0.03, anchor="ne")
 
+search_var = StringVar()
 search_entry = ctk.CTkEntry(
-    search_frame, placeholder_text="Search for a location", width=400, height=40)
-search_entry.grid(row=0, column=0, padx=(0, 10))
+    top_frame, textvariable=search_var, placeholder_text="Search for a location...", width=250, height=35, corner_radius=15)
+search_entry.grid(row=0, column=0, padx=5, pady=5)
 
 search_button = ctk.CTkButton(
-    search_frame, text="Search", command=getAddress, width=120, height=40)
-search_button.grid(row=0, column=1)
+    top_frame, text="🔍", width=40, height=35, corner_radius=15, command=getAddress)
+search_button.grid(row=0, column=1, padx=5, pady=5)
 
-# Tile server buttons (centered at bottom)
-button_frame = ctk.CTkFrame(root, fg_color="transparent")
-button_frame.pack(pady=10)
 
-google_maps_button = ctk.CTkButton(button_frame, text="Google Maps",
-                                   command=lambda: change_tile_server(
-                                       "Google Maps"),
-                                   width=150, height=40)
-google_maps_button.grid(row=0, column=0, padx=10)
+# Tile Server Buttons (Floating on the Map)
+button_frame = ctk.CTkFrame(root, fg_color="#ffffff", corner_radius=15)
+button_frame.place(relx=0.02, rely=0.5, anchor="w")  # Left-center position
 
-google_satellite_button = ctk.CTkButton(button_frame, text="Google Satellite",
-                                        command=lambda: change_tile_server(
-                                            "Google Satellite"),
-                                        width=150, height=40)
-google_satellite_button.grid(row=0, column=1, padx=10)
+google_maps_button = ctk.CTkButton(
+    button_frame, text="Google Maps", command=lambda: change_tile_server("Google Maps"))
+google_maps_button.pack(pady=5, padx=10)
 
-osm_button = ctk.CTkButton(button_frame, text="OS Maps",
-                           command=lambda: change_tile_server("OS Maps"),
-                           width=150, height=40)
-osm_button.grid(row=0, column=2, padx=10)
+google_satellite_button = ctk.CTkButton(
+    button_frame, text="Satellite", command=lambda: change_tile_server("Google Satellite"))
+google_satellite_button.pack(pady=5, padx=10)
+
+osm_button = ctk.CTkButton(
+    button_frame, text="OS Maps", command=lambda: change_tile_server("OS Maps"))
+osm_button.pack(pady=5, padx=10)
+
 
 # Logging output
-log_output = ctk.StringVar(value="Ready...")
-log_label = ctk.CTkLabel(root, textvariable=log_output,
-                         font=("Helvetica", 16), text_color="gray")
-log_label.pack(pady=5)
+log_output = StringVar()
+log_output.set("Welcome! Enter a location or change map tiles.")
+log_label = ctk.CTkLabel(root, textvariable=log_output, height=30,
+                         fg_color="#e0e0e0", corner_radius=5, anchor="w", padx=10)
+log_label.pack(side="bottom", fill="x")
 
 london_polygon = map_widget.set_polygon(
     [
