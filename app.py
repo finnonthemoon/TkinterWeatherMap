@@ -158,4 +158,5 @@ london_polygon = map_widget.set_polygon(
     name="London and the Chilterns"
 )
 
+map_widget.set_overlay_tile_server("https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=c72b8237acd5ac5cbd79f7d38cc0bbb9")
 root.mainloop()
