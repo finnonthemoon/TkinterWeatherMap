@@ -90,9 +90,9 @@ map_widget.set_tile_server(tile_servers_dict["Google Maps"])
 map_widget.set_zoom(9)
 map_widget.set_position(51.5074, -0.1278)
 
-top_frame = ctk.CTkFrame(root,
-                         fg_color="white",
-                         corner_radius=20)
+
+# Search bar
+top_frame = ctk.CTkFrame(root, fg_color="white", corner_radius=20)
 top_frame.place(relx=0.98, rely=0.03, anchor="ne")
 
 search_var = StringVar()
@@ -102,30 +102,29 @@ search_entry = ctk.CTkEntry(
     placeholder_text="Search for a location...",
     width=325,
     height=45,
-    corner_radius=15,
+    corner_radius=12,
     fg_color="white")
-search_entry.grid(row=0, column=0, padx=15, pady=15)
+search_entry.grid(row=0, column=0, padx=15, pady=10)
 
 search_button = ctk.CTkButton(
-    top_frame, text="Search", width=40, height=35, corner_radius=15, command=getAddress)
-search_button.grid(row=0, column=1, padx=5, pady=5)
+    top_frame, text="Search", width=90, height=40, corner_radius=12, command=getAddress)
+search_button.grid(row=0, column=1, padx=15)
 
 
-# Tile Server Buttons (Floating on the Map)
-button_frame = ctk.CTkFrame(root, fg_color="white",
-                            corner_radius=15, bg_color='white')
-button_frame.place(relx=0.95, rely=0.5, anchor="e")  # Left-center position
+# Tile Server Buttons
+button_frame = ctk.CTkFrame(root, fg_color="white")
+button_frame.place(relx=0.035, rely=0.5, anchor="w")
 
 google_maps_button = ctk.CTkButton(
-    button_frame, text="Google Maps", command=lambda: change_tile_server("Google Maps"))
+    button_frame, text="Google Maps", width=150, height=50, command=lambda: change_tile_server("Google Maps"))
 google_maps_button.pack(pady=10, padx=10)
 
 google_satellite_button = ctk.CTkButton(
-    button_frame, text="Satellite", command=lambda: change_tile_server("Google Satellite"))
+    button_frame, text="Satellite", width=150, height=50, command=lambda: change_tile_server("Google Satellite"))
 google_satellite_button.pack(pady=10, padx=10)
 
 osm_button = ctk.CTkButton(
-    button_frame, text="OS Maps", command=lambda: change_tile_server("OS Maps"))
+    button_frame, text="OS Maps", width=150, height=50, command=lambda: change_tile_server("OS Maps"))
 osm_button.pack(pady=10, padx=10)
 
 
@@ -135,6 +134,7 @@ log_output.set("Welcome RainItIn! I hope you enjoy my app :)")
 log_label = ctk.CTkLabel(root, textvariable=log_output, height=30,
                          fg_color="#e0e0e0", corner_radius=5, anchor="w", padx=10)
 log_label.pack(side="bottom", fill="x")
+
 
 london_polygon = map_widget.set_polygon(
     [
@@ -158,5 +158,7 @@ london_polygon = map_widget.set_polygon(
     name="London and the Chilterns"
 )
 
-map_widget.set_overlay_tile_server("https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=c72b8237acd5ac5cbd79f7d38cc0bbb9")
+map_widget.set_overlay_tile_server(
+    "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=c72b8237acd5ac5cbd79f7d38cc0bbb9")
+
 root.mainloop()
