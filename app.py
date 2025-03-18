@@ -50,16 +50,23 @@ def get_coordinates_opencage(address):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        if data["results"]:
-            lat = data["results"][0]["geometry"]["lat"]
-            lon = data["results"][0]["geometry"]["lng"]
-            log_output.set("Found coordinates...")
-            return lat, lon
-        else:
-            log_output.set("No results found for the address")
-            raise ValueError("No results found for the given address.")
+
+        if not data["results"]:
+            log_output.set("❌ An error occurred retrieving data")
+            messagebox.showerror(title="Error", message="An error occurred retrieving data", icon="warning")
+        
+        if "confidence" in data["results"][0]["annotations"]:
+            confidence = data["results"][0]["annotations"]["confidence"]
+            if confidence < 6:
+                messagebox.showerror(title="Invalid Address", message="Please enter a valid address", icon="warning")
+
+
+        lat = data["results"][0]["geometry"]["lat"]
+        lon = data["results"][0]["geometry"]["lng"]
+        log_output.set("Found coordinates...")
+        return lat, lon
     else:
-        log_output.set("An error occurred")
+        # log_output.set("An error occurred")
         response.raise_for_status()
 
 
@@ -73,14 +80,12 @@ def getAddress():
             log_output.set(
                 f"Found: {inputted_place} (Lat: {lat}, Lon: {lon})")
             map_widget.set_zoom(14)
-        except Exception as e:
-            log_output.set("An error has occurred")
-            messagebox.showerror(title="Error", message=f"Error: {
-                                 e}", icon="cancel")
+        except ValueError as e:
+            log_output.set(f"⚠️ Error: {e}")  # Log the error
+            messagebox.showerror(title="Error", message=f"Error: {e}", icon="cancel")
     else:
-        log_output.set("Invalid address entered!")
-        messagebox.showerror(
-            title="Error", message="Please enter a valid address", icon="warning")
+        log_output.set("⚠️ Please enter a valid address")  # Log empty input
+        messagebox.showerror(title="Error", message="Please enter a valid address", icon="warning")
 
 
 map_widget = tkintermapview.TkinterMapView(
