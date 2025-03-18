@@ -15,7 +15,7 @@ tile_servers_dict = {
 
 # Tkinter window setup
 root = ctk.CTk()
-root.geometry(f"{1200}x{900}")
+root.geometry(f"{1300}x{950}")
 root.title("Weather Map")
 root.configure(fg_color="#ffffff")
 root.state("zoomed")
@@ -53,10 +53,13 @@ def get_coordinates_opencage(address):
         if data["results"]:
             lat = data["results"][0]["geometry"]["lat"]
             lon = data["results"][0]["geometry"]["lng"]
+            log_output.set("Found coordinates...")
             return lat, lon
         else:
+            log_output.set("No results found for the address")
             raise ValueError("No results found for the given address.")
     else:
+        log_output.set("An error occurred")
         response.raise_for_status()
 
 
@@ -71,9 +74,11 @@ def getAddress():
                 f"Found: {inputted_place} (Lat: {lat}, Lon: {lon})")
             map_widget.set_zoom(14)
         except Exception as e:
+            log_output.set("An error has occurred")
             messagebox.showerror(title="Error", message=f"Error: {
                                  e}", icon="cancel")
     else:
+        log_output.set("Invalid address entered!")
         messagebox.showerror(
             title="Error", message="Please enter a valid address", icon="warning")
 
