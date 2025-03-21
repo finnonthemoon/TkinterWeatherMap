@@ -3,6 +3,8 @@ from tkinter import ttk, messagebox, StringVar
 import tkintermapview
 import requests
 import customtkinter as ctk
+import threading
+
 
 ctk.set_appearance_mode("Light")
 ctk.set_default_color_theme("blue")
@@ -21,7 +23,7 @@ root.configure(fg_color="#ffffff")
 root.state("zoomed")
 
 # OpenWeatherMap API Key
-OWM_KEY = "c72b8237acd5ac5cbd79f7d38cc0bbb9"
+
 OPENCAGE_KEY = "668c51611f5042ee8636cb2d7426a6c0"
 
 
@@ -53,13 +55,14 @@ def get_coordinates_opencage(address):
 
         if not data["results"]:
             log_output.set("❌ An error occurred retrieving data")
-            messagebox.showerror(title="Error", message="An error occurred retrieving data", icon="warning")
-        
+            messagebox.showerror(
+                title="Error", message="An error occurred retrieving data", icon="warning")
+
         if "confidence" in data["results"][0]["annotations"]:
             confidence = data["results"][0]["annotations"]["confidence"]
             if confidence < 6:
-                messagebox.showerror(title="Invalid Address", message="Please enter a valid address", icon="warning")
-
+                messagebox.showerror(
+                    title="Invalid Address", message="Please enter a valid address", icon="warning")
 
         lat = data["results"][0]["geometry"]["lat"]
         lon = data["results"][0]["geometry"]["lng"]
@@ -82,10 +85,12 @@ def getAddress():
             map_widget.set_zoom(14)
         except ValueError as e:
             log_output.set(f"⚠️ Error: {e}")  # Log the error
-            messagebox.showerror(title="Error", message=f"Error: {e}", icon="cancel")
+            messagebox.showerror(
+                title="Error", message=f"Error: {e}", icon="cancel")
     else:
         log_output.set("⚠️ Please enter a valid address")  # Log empty input
-        messagebox.showerror(title="Error", message="Please enter a valid address", icon="warning")
+        messagebox.showerror(
+            title="Error", message="Please enter a valid address", icon="warning")
 
 
 map_widget = tkintermapview.TkinterMapView(
@@ -168,7 +173,34 @@ london_polygon = map_widget.set_polygon(
     name="London and the Chilterns"
 )
 
+API_URL = "https://api.rainviewer.com/public/weather-maps.json"
+
+
+def fetch_weather_data():
+    response = requests.get(API_URL)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        log_output.set(f"⚠️ Error fetching data: {response.status_code}")
+        return None
+
+
+data = fetch_weather_data()
+
+
+def get_latest_radar_url(data):
+    if data and "radar" in data:
+        radar_frames = data["radar"].get(
+            "nowcast", []) or data["radar"].get("past", [])
+        if radar_frames:
+            latest_frame = radar_frames[-1]
+            return f"{data['host']}{latest_frame['path']}"
+    return None
+
+
+tile_url = get_latest_radar_url(data)
+
 map_widget.set_overlay_tile_server(
-    "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=c72b8237acd5ac5cbd79f7d38cc0bbb9")
+    f"{tile_url}/512/{{z}}/{{x}}/{{y}}/1/1_0.png")
 
 root.mainloop()
