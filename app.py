@@ -142,6 +142,45 @@ osm_button = ctk.CTkButton(
     button_frame, text="OS Maps", width=150, height=50, command=lambda: change_tile_server("OS Maps"))
 osm_button.pack(pady=10, padx=10)
 
+def add_marker_event(coords):
+    print("Add marker:", coords)
+    new_marker = map_widget.set_marker(coords[0], coords[1], text=f"{address_from_coords(coords[0], coords[1])}")
+    
+
+map_widget.add_right_click_menu_command(label="Add Marker",
+                                        command=add_marker_event,
+                                        pass_coords=True)
+
+
+def address_from_coords(lat, lon):
+    url = f"https://api.opencagedata.com/geocode/v1/json?q={lat}+{lon}&key={OPENCAGE_KEY}"
+
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if data["results"]:
+            components = data["results"][0]["components"]
+
+            # Get road name if available
+            road = components.get("road", None)
+            # Get area name (neighborhood, suburb, or town)
+            area = components.get("neighbourhood") or components.get("suburb") or components.get("town")
+
+            # Format the result
+            if road and area:
+                return f"{road}, {area}"  # Example: "Baker Street, Marylebone"
+            elif road:
+                return road  # If no area, return just road
+            elif area:
+                return area  # If no road, return just area
+            else:
+                return "Unknown Location"
+        else:
+            return "No address found"
+    else:
+        return f"Error: {response.status_code}"
+
+
 
 # Logging output
 log_output = StringVar()
