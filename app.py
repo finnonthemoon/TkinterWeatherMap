@@ -189,29 +189,6 @@ log_label = ctk.CTkLabel(root, textvariable=log_output, height=30,
                          fg_color="#e0e0e0", corner_radius=5, anchor="w", padx=10)
 log_label.pack(side="bottom", fill="x")
 
-
-london_polygon = map_widget.set_polygon(
-    [
-        (51.722002972, -1.1537175776),
-        (51.516126327, -1.1901767121),
-        (51.301538032, -0.8626944836),
-        (51.192197665, -0.43314727484),
-        (51.179068124, 0.12579509192),
-        (51.284533875, 0.49797646601),
-        (51.528586602, 0.47162098553),
-        (51.682688365, 0.26010226980),
-        (51.766124775, 0.082666508775),
-        (51.815788382, -0.22561855295),
-        (51.848903847, -0.57421114314),
-        (51.870491134, -0.87684831507),
-        (51.846885757, -1.076522952),
-        (51.722002972, -1.1537175776)
-    ],
-    fill_color="blue",
-    border_width=6,
-    name="London and the Chilterns"
-)
-
 API_URL = "https://api.rainviewer.com/public/weather-maps.json"
 
 
