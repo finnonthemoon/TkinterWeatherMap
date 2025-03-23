@@ -118,11 +118,11 @@ search_entry = ctk.CTkEntry(
     height=45,
     corner_radius=12,
     fg_color="white")
-search_entry.grid(row=0, column=0, padx=15, pady=10)
+search_entry.grid(row=0, column=0, padx=12, pady=10)
 
 search_button = ctk.CTkButton(
-    top_frame, text="Search", width=90, height=40, corner_radius=12, command=getAddress)
-search_button.grid(row=0, column=1, padx=15)
+    top_frame, text="Search", width=90, height=40, corner_radius=12, command=getAddress, font=("helvetica", 17))
+search_button.grid(row=0, column=1, padx=12)
 
 
 # Tile Server Buttons
@@ -215,8 +215,13 @@ def get_latest_radar_url(data):
 
 
 tile_url = get_latest_radar_url(data)
+overlay_url = f"{tile_url}/512/{{z}}/{{x}}/{{y}}/1/1_0.png"
 
-map_widget.set_overlay_tile_server(
-    f"{tile_url}/512/{{z}}/{{x}}/{{y}}/1/1_0.png")
+
+rain_map_active = False
+
+rain_map_toggle = ctk.CTkSwitch(
+    root, text="Rainfall Map", width=150, height=35, font=("helvetica", 14))
+rain_map_toggle.place(relx=0.045, rely=0.25, anchor=NW)
 
 root.mainloop()
