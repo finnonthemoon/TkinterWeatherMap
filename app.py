@@ -32,17 +32,14 @@ def change_tile_server(server):
         case "Google Maps":
             map_widget.set_tile_server(
                 tile_servers_dict["Google Maps"], max_zoom=22)
-            print("Changed tile server to g maps")
             log_output.set(f"Tile server switched to {server}")
         case "Google Satellite":
             map_widget.set_tile_server(
                 tile_servers_dict["Google Satellite"], max_zoom=22)
-            print("Changed tile server to g sat")
             log_output.set(f"Tile server switched to {server}")
         case "OS Maps":
             map_widget.set_tile_server(
                 tile_servers_dict["OS Maps"], max_zoom=19)
-            print("Changed tile server to OS")
             log_output.set(f"Tile server switched to {server}")
 
 
@@ -220,8 +217,33 @@ overlay_url = f"{tile_url}/512/{{z}}/{{x}}/{{y}}/1/1_0.png"
 
 rain_map_active = False
 
+
+def toggle_rain_map():
+    if rain_map_toggle.get() == 1:
+        # Enable rainfall overlay
+        overlay_url = f"{tile_url}/512/{{z}}/{{x}}/{{y}}/1/1_0.png"
+        if overlay_url:
+            map_widget.set_overlay_tile_server(overlay_url)
+            log_output.set("Rainfall map enabled")
+
+        map_widget.set_tile_server(
+            "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
+        map_widget.set_tile_server(
+            "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga")
+
+    else:
+        map_widget.set_overlay_tile_server(
+            "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga")
+        map_widget.set_tile_server(
+            "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
+        map_widget.set_tile_server(
+            "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga")
+
+        log_output.set("Rainfall map disabled")
+
+
 rain_map_toggle = ctk.CTkSwitch(
-    root, text="Rainfall Map", width=150, height=35, font=("helvetica", 14))
+    root, text="Rainfall Map", width=150, height=35, font=("helvetica", 14), command=toggle_rain_map)
 rain_map_toggle.place(relx=0.045, rely=0.25, anchor=NW)
 
 root.mainloop()
