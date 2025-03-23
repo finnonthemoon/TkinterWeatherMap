@@ -216,30 +216,26 @@ overlay_url = f"{tile_url}/512/{{z}}/{{x}}/{{y}}/1/1_0.png"
 
 
 rain_map_active = False
+previous_tile_server = tile_servers_dict["Google Maps"]
 
 
 def toggle_rain_map():
+    global rain_map_active, previous_tile_server
+
     if rain_map_toggle.get() == 1:
-        # Enable rainfall overlay
         overlay_url = f"{tile_url}/512/{{z}}/{{x}}/{{y}}/1/1_0.png"
         if overlay_url:
+            previous_tile_server = map_widget.tile_server
             map_widget.set_overlay_tile_server(overlay_url)
-            log_output.set("Rainfall map enabled")
+            log_output.set("🌧 Rainfall map enabled")
 
-        map_widget.set_tile_server(
-            "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        map_widget.set_tile_server(
-            "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga")
+        map_widget.set_tile_server(previous_tile_server)
 
     else:
-        map_widget.set_overlay_tile_server(
-            "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga")
-        map_widget.set_tile_server(
-            "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        map_widget.set_tile_server(
-            "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga")
+        map_widget.set_overlay_tile_server(None)
+        map_widget.set_tile_server(previous_tile_server)
 
-        log_output.set("Rainfall map disabled")
+        log_output.set("🌤 Rainfall map disabled")
 
 
 rain_map_toggle = ctk.CTkSwitch(
