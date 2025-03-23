@@ -47,8 +47,7 @@ def change_tile_server(server):
 
 
 def get_coordinates_opencage(address):
-    url = f"https://api.opencagedata.com/geocode/v1/json?q={
-        address}&key={OPENCAGE_KEY}"
+    url = f"https://api.opencagedata.com/geocode/v1/json?q={address}&key={OPENCAGE_KEY}"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
@@ -142,10 +141,13 @@ osm_button = ctk.CTkButton(
     button_frame, text="OS Maps", width=150, height=50, command=lambda: change_tile_server("OS Maps"))
 osm_button.pack(pady=10, padx=10)
 
+
 def add_marker_event(coords):
-    print("Add marker:", coords)
-    new_marker = map_widget.set_marker(coords[0], coords[1], text=f"{address_from_coords(coords[0], coords[1])}")
-    
+    if not coords:
+        log_output.set("Something went wrong!")
+    new_marker = map_widget.set_marker(
+        coords[0], coords[1], font="Helvetica 11 bold", text_color="#333333", text=f"{address_from_coords(coords[0], coords[1])}")
+
 
 map_widget.add_right_click_menu_command(label="Add Marker",
                                         command=add_marker_event,
@@ -161,25 +163,23 @@ def address_from_coords(lat, lon):
         if data["results"]:
             components = data["results"][0]["components"]
 
-            # Get road name if available
             road = components.get("road", None)
-            # Get area name (neighborhood, suburb, or town)
-            area = components.get("neighbourhood") or components.get("suburb") or components.get("town")
 
-            # Format the result
+            area = components.get("neighbourhood") or components.get(
+                "suburb") or components.get("town")
+
             if road and area:
-                return f"{road}, {area}"  # Example: "Baker Street, Marylebone"
+                return f"{road}, {area}"
             elif road:
-                return road  # If no area, return just road
+                return road
             elif area:
-                return area  # If no road, return just area
+                return area
             else:
                 return "Unknown Location"
         else:
             return "No address found"
     else:
         return f"Error: {response.status_code}"
-
 
 
 # Logging output
