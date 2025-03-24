@@ -127,15 +127,15 @@ button_frame = ctk.CTkFrame(root, fg_color="white")
 button_frame.place(relx=0.035, rely=0.5, anchor="w")
 
 google_maps_button = ctk.CTkButton(
-    button_frame, text="Google Maps", width=150, height=50, command=lambda: change_tile_server("Google Maps"))
+    button_frame, text="Google Maps", font=("helvetica", 20), width=150, height=50, command=lambda: change_tile_server("Google Maps"))
 google_maps_button.pack(pady=10, padx=10)
 
 google_satellite_button = ctk.CTkButton(
-    button_frame, text="Satellite", width=150, height=50, command=lambda: change_tile_server("Google Satellite"))
+    button_frame, text="Satellite", font=("helvetica", 20), width=150, height=50, command=lambda: change_tile_server("Google Satellite"))
 google_satellite_button.pack(pady=10, padx=10)
 
 osm_button = ctk.CTkButton(
-    button_frame, text="OS Maps", width=150, height=50, command=lambda: change_tile_server("OS Maps"))
+    button_frame, text="OS Maps", font=("helvetica", 20), width=150, height=50, command=lambda: change_tile_server("OS Maps"))
 osm_button.pack(pady=10, padx=10)
 
 
@@ -241,5 +241,14 @@ def toggle_rain_map():
 rain_map_toggle = ctk.CTkSwitch(
     root, text="Rainfall Map", width=150, height=35, font=("helvetica", 14), command=toggle_rain_map)
 rain_map_toggle.place(relx=0.045, rely=0.25, anchor=NW)
+
+
+def update_rain_map():
+    pass
+
+
+rain_time_slider = ctk.CTkSlider(
+    root, command=update_rain_map, number_of_steps=10, width=450, height=25)
+rain_time_slider.place(relx=0.5, rely=0.9, anchor=CENTER)
 
 root.mainloop()
