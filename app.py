@@ -4,7 +4,7 @@ import tkintermapview
 import requests
 import customtkinter as ctk
 import threading
-
+from datetime import datetime, timedelta, timezone
 
 ctk.set_appearance_mode("Light")
 ctk.set_default_color_theme("blue")
@@ -243,12 +243,72 @@ rain_map_toggle = ctk.CTkSwitch(
 rain_map_toggle.place(relx=0.045, rely=0.25, anchor=NW)
 
 
-def update_rain_map():
-    pass
+def fetch_weather_data():
+    response = requests.get(API_URL)
+    if response.status_code == 200:
+        return response.json()
+    return None
 
 
-rain_time_slider = ctk.CTkSlider(
-    root, command=update_rain_map, number_of_steps=10, width=450, height=25)
-rain_time_slider.place(relx=0.5, rely=0.9, anchor=CENTER)
+def get_radar_url(timestamp):
+    data = fetch_weather_data()
+    if data and "radar" in data:
+        radar_frames = data["radar"].get(
+            "nowcast", []) or data["radar"].get("past", [])
+        for frame in radar_frames:
+            if frame["time"] == timestamp:
+                return f"{data['host']}{frame['path']}"
+    return None
+
+
+def generate_time_labels():
+    now = datetime.now()
+    current_minute = (now.minute // 10 + 1) * 10
+
+    if current_minute == 60:  # Handle hour overflow
+        now = now.replace(hour=now.hour + 1, minute=0, second=0, microsecond=0)
+    else:
+        now = now.replace(minute=current_minute, second=0, microsecond=0)
+
+    times = [now] + [now + timedelta(minutes=10 * i) for i in range(1, 3)]
+
+    return [(t, t.strftime("%H:%M")) for t in times]
+
+
+def update_rain_map(selected_time):
+    global tile_url
+
+    formatted_time = selected_time.strftime("%Y%m%d%H%M")
+    radar_url = get_radar_url(int(selected_time.timestamp()))
+
+    if not radar_url:
+        log_output.set(
+            f"⚠️ No data available for {selected_time.strftime('%H:%M')}")
+        return
+
+    new_overlay_url = f"{radar_url}/512/{{z}}/{{x}}/{{y}}/1/1_0.png"
+
+    current_tile_server = map_widget.tile_server
+    map_widget.set_tile_server("")
+    map_widget.set_tile_server(current_tile_server)
+
+    map_widget.set_overlay_tile_server(new_overlay_url)
+
+    log_output.set(
+        f"✅ Weather data updated for {selected_time.strftime('%H:%M')}")
+    print(f"🛰 Overlay URL: {new_overlay_url}")
+
+
+def create_time_buttons():
+    time_frame = ctk.CTkFrame(root, fg_color="white")
+    time_frame.place(relx=0.5, rely=0.95, anchor="s")
+
+    for t, label in generate_time_labels():
+        btn = ctk.CTkButton(time_frame, text=label, width=60,
+                            height=40, command=lambda t=t: update_rain_map(t))
+        btn.pack(side="left", padx=5)
+
+
+create_time_buttons()
 
 root.mainloop()
