@@ -242,14 +242,6 @@ rain_map_toggle = ctk.CTkSwitch(
     root, text="Rainfall Map", width=150, height=35, font=("helvetica", 14), command=toggle_rain_map)
 rain_map_toggle.place(relx=0.045, rely=0.25, anchor=NW)
 
-
-def fetch_weather_data():
-    response = requests.get(API_URL)
-    if response.status_code == 200:
-        return response.json()
-    return None
-
-
 def get_radar_url(timestamp):
     data = fetch_weather_data()
     if data and "radar" in data:
