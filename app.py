@@ -5,6 +5,7 @@ import requests
 import customtkinter as ctk
 import threading
 from datetime import datetime, timedelta, timezone
+from PIL import Image, ImageTk
 
 ctk.set_appearance_mode("Light")
 ctk.set_default_color_theme("blue")
@@ -242,6 +243,7 @@ rain_map_toggle = ctk.CTkSwitch(
     root, text="Rainfall Map", width=150, height=35, font=("helvetica", 14), command=toggle_rain_map)
 rain_map_toggle.place(relx=0.045, rely=0.25, anchor=NW)
 
+
 def get_radar_url(timestamp):
     data = fetch_weather_data()
     if data and "radar" in data:
@@ -302,5 +304,17 @@ def create_time_buttons():
 
 
 create_time_buttons()
+
+key_frame = ctk.CTkFrame(root, width=200, height=350,
+                         corner_radius=0, fg_color="#1b1c1f")
+key_frame.place(relx=0.97, rely=0.5, anchor="e")
+
+rain_key = Image.open("rainkey.png")
+
+rain_key = rain_key.resize((160, 240), Image.LANCZOS)
+image = ImageTk.PhotoImage(rain_key)
+
+image_label = ctk.CTkLabel(key_frame, text="", image=image)
+image_label.pack(expand=True, fill="both", padx=12, pady=12)
 
 root.mainloop()
