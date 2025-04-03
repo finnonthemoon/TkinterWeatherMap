@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox, StringVar
 import tkintermapview
 import requests
 import customtkinter as ctk
-import threading
 from datetime import datetime, timedelta, timezone
 from PIL import Image, ImageTk
 
@@ -16,14 +15,11 @@ tile_servers_dict = {
     "OS Maps": "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
 }
 
-# Tkinter window setup
 root = ctk.CTk()
 root.geometry(f"{1300}x{950}")
 root.title("Weather Map")
 root.configure(fg_color="#ffffff")
 root.state("zoomed")
-
-# OpenWeatherMap API Key
 
 OPENCAGE_KEY = "668c51611f5042ee8636cb2d7426a6c0"
 
@@ -66,8 +62,7 @@ def get_coordinates_opencage(address):
         log_output.set("Found coordinates...")
         return lat, lon
     else:
-        # log_output.set("An error occurred")
-        response.raise_for_status()
+        log_output.set(f"An error occurred: {response.raise_for_status()}")
 
 
 def getAddress():
@@ -81,11 +76,11 @@ def getAddress():
                 f"Found: {inputted_place} (Lat: {lat}, Lon: {lon})")
             map_widget.set_zoom(14)
         except ValueError as e:
-            log_output.set(f"⚠️ Error: {e}")  # Log the error
+            log_output.set(f"⚠️ Error: {e}")
             messagebox.showerror(
                 title="Error", message=f"Error: {e}", icon="cancel")
     else:
-        log_output.set("⚠️ Please enter a valid address")  # Log empty input
+        log_output.set("⚠️ Please enter a valid address")
         messagebox.showerror(
             title="Error", message="Please enter a valid address", icon="warning")
 
@@ -103,7 +98,6 @@ map_widget.set_zoom(9)
 map_widget.set_position(51.5074, -0.1278)
 
 
-# Search bar
 top_frame = ctk.CTkFrame(root, fg_color="white", corner_radius=20)
 top_frame.place(relx=0.98, rely=0.03, anchor="ne")
 
@@ -123,7 +117,6 @@ search_button = ctk.CTkButton(
 search_button.grid(row=0, column=1, padx=12)
 
 
-# Tile Server Buttons
 button_frame = ctk.CTkFrame(root, fg_color="white")
 button_frame.place(relx=0.035, rely=0.5, anchor="w")
 
@@ -180,7 +173,6 @@ def address_from_coords(lat, lon):
         return f"Error: {response.status_code}"
 
 
-# Logging output
 log_output = StringVar()
 log_output.set("Welcome RainItIn! I hope you enjoy my app :)")
 log_label = ctk.CTkLabel(root, textvariable=log_output, height=30,
@@ -259,7 +251,7 @@ def generate_time_labels():
     now = datetime.now()
     current_minute = (now.minute // 10 + 1) * 10
 
-    if current_minute == 60:  # Handle hour overflow
+    if current_minute == 60:
         now = now.replace(hour=now.hour + 1, minute=0, second=0, microsecond=0)
     else:
         now = now.replace(minute=current_minute, second=0, microsecond=0)
